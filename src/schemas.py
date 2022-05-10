@@ -6,6 +6,5 @@ class ShortnerUrlInputSchema(BaseModel):
 
 
 class ShortnerUrlSchema(BaseModel):
-    id: str
     long_url: str
     short_url: str
