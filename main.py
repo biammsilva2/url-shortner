@@ -20,8 +20,11 @@ MONGO_HOST = os.getenv('MONGO_HOST', 'localhost')
 MONGO_PORT = int(os.getenv('MONGO_PORT', '27017'))
 
 connect(
-    host=f'mongodb://{MONGO_USER}:{MONGO_PASSWORD}'
-         f'@{MONGO_HOST}:{MONGO_PORT}/{MONGO_DB}'
+    db=MONGO_DB,
+    username=MONGO_USER,
+    password=MONGO_PASSWORD,
+    host=MONGO_HOST,
+    port=MONGO_PORT
 )
 
 app.include_router(router)
