@@ -1,4 +1,6 @@
+from itertools import count
 import uuid
+from fastapi import HTTPException
 
 from mongoengine.errors import DoesNotExist, MultipleObjectsReturned
 
@@ -10,9 +12,15 @@ class ShortenUrlService:
     @classmethod
     def shorten_random_url(cls) -> str:
         short_url = cls.generate_short_url()
+        counter = 1
         while ShortenUrlService.is_short_url_on_database(short_url):
-            # TODO: change to use the collection id
             short_url = cls.generate_short_url()
+            counter += 1
+            if counter >= 100:
+                raise HTTPException(
+                    status_code=422,
+                    detail='No url available at the moment, try again later'
+                )
         return short_url
 
     @staticmethod
