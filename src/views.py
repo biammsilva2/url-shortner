@@ -36,7 +36,14 @@ def shorten_url_endpoint(item: ShortnerUrlInputSchema, request: Request,
             short_url_object = ShortUrl(**short_url_data).save()
         except NotUniqueError:
             raise HTTPException(409, detail="short url already exists")
-        redis_client.set(short_url_object.short_url, short_url_object.long_url)
+        try:
+            redis_client.set(
+                short_url_object.short_url, short_url_object.long_url
+            )
+        except redis.ConnectionError:
+            # TODO: Send log to the server
+            # if redis is not working out, it should not stop my operation
+            pass
         response.status_code = status.HTTP_201_CREATED
 
     return short_url_object.parse_object(host=str(request.base_url))
@@ -45,15 +52,21 @@ def shorten_url_endpoint(item: ShortnerUrlInputSchema, request: Request,
 @router.get('/{short_url_token}', response_class=RedirectResponse,
             status_code=status.HTTP_303_SEE_OTHER)
 def redirect_to_long_url(short_url_token: str):
-    if (long_url := redis_client.get(short_url_token)) is not None:
-        return long_url.decode("utf-8")
+    try:
+        if (long_url := redis_client.get(short_url_token)) is not None:
+            return long_url.decode("utf-8")
+    except redis.ConnectionError:
+        # TODO: Send log to the server
+        # if redis is not working out, it should not stop my operation
+        pass
     try:
         short_url_object = ActiveShortUrl.objects(
             short_url=short_url_token
         ).get()
     except DoesNotExist:
         raise HTTPException(404, detail="Short Url not found")
-    short_url_object.validate_link()
+    if not short_url_object.validate_link():
+        raise HTTPException(422, detail='Link no longer available')
     short_url_object.redirects_count += 1
     short_url_object.save()
     return short_url_object.long_url
@@ -70,9 +83,4 @@ def analytics(short_url_token: str):
         short_url_object.validate_link()
     except DoesNotExist:
         raise HTTPException(404, detail="Short Url not found")
-    except HTTPException as exception:
-        if exception.status_code == 422:
-            pass
-        else:
-            raise
     return short_url_object.parse_object()

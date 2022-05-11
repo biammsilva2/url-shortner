@@ -10,6 +10,9 @@ mongoengine = "*"
 python-dotenv = "*"
 pytest = "*"
 redis = "*"
+mongomock = "*"
+requests = "*"
+coverage = "*"
 
 [dev-packages]
 flake8 = "*"

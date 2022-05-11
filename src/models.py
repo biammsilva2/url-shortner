@@ -1,6 +1,5 @@
 import datetime
 
-from fastapi import HTTPException
 from mongoengine import Document, URLField, StringField, DateTimeField
 from mongoengine import BooleanField, IntField
 
@@ -27,7 +26,8 @@ class ShortUrl(Document):
         if self.is_active:
             if self.timespan <= datetime.datetime.now():
                 self.is_active = False
-                raise HTTPException(422, detail='Link no longer available')
+                return False
+        return True
 
     def parse_object(self, host: str = '') -> dict:
         return {

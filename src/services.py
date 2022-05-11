@@ -1,7 +1,7 @@
 import uuid
 from fastapi import HTTPException
 
-from mongoengine.errors import DoesNotExist, MultipleObjectsReturned
+from mongoengine.errors import DoesNotExist
 
 from src.models import ShortUrl
 
@@ -31,6 +31,4 @@ class ShortenUrlService:
         try:
             return ShortUrl.objects(short_url=short_url).get()
         except DoesNotExist:
-            return False
-        except MultipleObjectsReturned:
             return False
