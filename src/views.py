@@ -12,9 +12,13 @@ router = APIRouter()
 
 @router.post('/shorten', response_model=ShortnerUrlSchema)
 def shorten_url_endpoint(item: ShortnerUrlInputSchema, request: Request):
-    if (short_url_object := ShortUrl.objects(long_url=item.url).first()):
-        return short_url_object.parse_object(str(request.base_url))
-    short_url = ShortenUrlService.shorten_random_url()
+    if (short_url := item.custom_short_link):
+        if ShortenUrlService.is_short_url_on_database(short_url):
+            raise HTTPException(409, detail="short url already exists")
+    else:
+        if (short_url_object := ShortUrl.objects(long_url=item.url).first()):
+            return short_url_object.parse_object(str(request.base_url))
+        short_url = ShortenUrlService.shorten_random_url()
     short_url_object = ShortUrl(short_url=short_url, long_url=item.url).save()
     return short_url_object.parse_object(str(request.base_url))
 
