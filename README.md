@@ -34,9 +34,10 @@ For both scenarios you must have a `.env` file with your database information lo
 MONGO_INITDB_ROOT_USERNAME=yourdatabaseuser
 MONGO_INITDB_ROOT_PASSWORD=yourdatabasepass
 MONGO_INITDB_DATABASE=yourdatabasename
+REDIS_PASSWORD=yourredispass
 ```
 
-If you need to up the database locally with the docker this file will provide the information to create your database as well.
+If you run the database and redis locally with the docker this file will provide the information to create your database as well.
 
 ### **Local environment with Pipenv**
 Make sure you have installed:

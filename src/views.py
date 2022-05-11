@@ -1,6 +1,9 @@
+import os
+
 from fastapi import APIRouter, Request, HTTPException, status, Response
 from fastapi.responses import RedirectResponse
 from mongoengine.errors import DoesNotExist, NotUniqueError
+import redis
 
 from src.models import ActiveShortUrl, ShortUrl
 from src.schemas import ShortnerUrlSchema, ShortnerUrlInputSchema
@@ -9,6 +12,9 @@ from src.services import ShortenUrlService
 
 
 router = APIRouter()
+
+
+redis_client = redis.Redis(password=os.getenv('REDIS_PASSWORD'))
 
 
 @router.post('/shorten', response_model=ShortnerUrlSchema)
@@ -30,23 +36,27 @@ def shorten_url_endpoint(item: ShortnerUrlInputSchema, request: Request,
             short_url_object = ShortUrl(**short_url_data).save()
         except NotUniqueError:
             raise HTTPException(409, detail="short url already exists")
+        redis_client.set(short_url_object.short_url, short_url_object.long_url)
         response.status_code = status.HTTP_201_CREATED
 
     return short_url_object.parse_object(host=str(request.base_url))
 
 
-@router.get('/{short_url_token}')
+@router.get('/{short_url_token}', response_class=RedirectResponse,
+            status_code=status.HTTP_303_SEE_OTHER)
 def redirect_to_long_url(short_url_token: str):
+    if (long_url := redis_client.get(short_url_token)) is not None:
+        return long_url.decode("utf-8")
     try:
         short_url_object = ActiveShortUrl.objects(
             short_url=short_url_token
         ).get()
-        short_url_object.validate_link()
     except DoesNotExist:
         raise HTTPException(404, detail="Short Url not found")
+    short_url_object.validate_link()
     short_url_object.redirects_count += 1
     short_url_object.save()
-    return RedirectResponse(url=short_url_object.long_url, status_code=303)
+    return short_url_object.long_url
 
 
 @router.get(

@@ -9,6 +9,7 @@ uvicorn = "*"
 mongoengine = "*"
 python-dotenv = "*"
 pytest = "*"
+redis = "*"
 
 [dev-packages]
 flake8 = "*"
