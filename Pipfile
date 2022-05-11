@@ -8,6 +8,7 @@ fastapi = "*"
 uvicorn = "*"
 mongoengine = "*"
 python-dotenv = "*"
+pytest = "*"
 
 [dev-packages]
 flake8 = "*"

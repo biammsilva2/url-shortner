@@ -3,7 +3,7 @@ from fastapi import HTTPException
 
 from mongoengine.errors import DoesNotExist, MultipleObjectsReturned
 
-from src.models import ActiveShortUrl
+from src.models import ShortUrl
 
 
 class ShortenUrlService:
@@ -29,7 +29,7 @@ class ShortenUrlService:
     @staticmethod
     def is_short_url_on_database(short_url: str) -> bool:
         try:
-            return ActiveShortUrl.objects(short_url=short_url).get()
+            return ShortUrl.objects(short_url=short_url).get()
         except DoesNotExist:
             return False
         except MultipleObjectsReturned:
