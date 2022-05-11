@@ -29,15 +29,11 @@ class ShortUrl(Document):
                 self.is_active = False
                 raise HTTPException(422, detail='Link no longer available')
 
-    def parse_object(self, host: str = '', analytics: bool = False) -> dict:
-        short_url_data = {
+    def parse_object(self, host: str = '') -> dict:
+        return {
             'long_url': self.long_url,
             'short_url': host + self.short_url,
-            'is_active': self.is_active
+            'is_active': self.is_active,
+            'timespan': str(self.timespan),
+            'redirects_count': self.redirects_count
         }
-        if analytics:
-            short_url_data.update({
-                'timespan': self.timespan,
-                'redirects_count': self.redirects_count
-            })
-        return short_url_data

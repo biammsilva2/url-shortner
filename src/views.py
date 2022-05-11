@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Request, HTTPException, status
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi import APIRouter, Request, HTTPException, status, Response
+from fastapi.responses import RedirectResponse
 from mongoengine.errors import DoesNotExist, NotUniqueError
 
 from src.models import ActiveShortUrl, ShortUrl
@@ -12,12 +12,13 @@ router = APIRouter()
 
 
 @router.post('/shorten', response_model=ShortnerUrlSchema)
-def shorten_url_endpoint(item: ShortnerUrlInputSchema, request: Request):
+def shorten_url_endpoint(item: ShortnerUrlInputSchema, request: Request,
+                         response: Response):
     if (short_url := item.custom_short_link) is None:
         short_url = ShortenUrlService.shorten_random_url()
 
     if (short_url_object := ActiveShortUrl.objects(long_url=item.url).first()):
-        status_code = status.HTTP_200_OK
+        response.status_code = status.HTTP_200_OK
     else:
         short_url_data = {
             'short_url': short_url,
@@ -29,12 +30,9 @@ def shorten_url_endpoint(item: ShortnerUrlInputSchema, request: Request):
             short_url_object = ShortUrl(**short_url_data).save()
         except NotUniqueError:
             raise HTTPException(409, detail="short url already exists")
-        status_code = status.HTTP_201_CREATED
+        response.status_code = status.HTTP_201_CREATED
 
-    return JSONResponse(
-        short_url_object.parse_object(host=str(request.base_url)),
-        status_code=status_code
-    )
+    return short_url_object.parse_object(host=str(request.base_url))
 
 
 @router.get('/{short_url_token}')
@@ -67,4 +65,4 @@ def analytics(short_url_token: str):
             pass
         else:
             raise
-    return short_url_object.parse_object(analytics=True)
+    return short_url_object.parse_object()
