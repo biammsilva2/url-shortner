@@ -17,10 +17,9 @@ services:
     env_file:
       - .env
     depends_on:
-      - redis
       - mongodb
   
   test:
     build: .
-    command: python -m pytest tests/
+    command: python -m unittest
   

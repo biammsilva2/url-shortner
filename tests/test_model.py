@@ -16,12 +16,12 @@ class TestModel(TestBase):
 
         assert url_object.short_url == 'short_link_test'
 
-        url_object1 = ShortUrl(
+        url_object_2 = ShortUrl(
             short_url='short_link_test', long_url='http://localhost:8000'
         )
 
         with self.assertRaises(NotUniqueError):
-            url_object1.save()
+            url_object_2.save()
 
     def test_url_not_longer_available(self):
         url_object = ShortUrl(

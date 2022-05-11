@@ -10,7 +10,7 @@ This API was made to shorten urls.
     - You can set your expiration date and time manually
     - The default expiration time is 5 days
 - Short urls are not being generated using the long url, so it is random and not predictable
-- To decrease the redirect time, this application is using a NoSQL database
+- This application is using a NoSQL database
 
 ## Tech Stack
 - Python - Programming Language
@@ -37,7 +37,7 @@ If you run the database locally with the docker this file will provide the infor
 
 ### **Local environment with Pipenv**
 Make sure you have installed:
-- Python at least 3.9
+- Python at least 3.10
 - Pipenv
 - Docker
 
@@ -50,7 +50,7 @@ Run the API:
 
 Run tests:
 
-    pytest
+    python -m unittest
 
 ### **Local environment with docker**
 Make sure you have installed:
