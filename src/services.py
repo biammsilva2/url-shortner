@@ -22,7 +22,7 @@ class ShortenUrlService:
     @staticmethod
     def is_short_url_on_database(short_url: str) -> bool:
         try:
-            return ActiveShortUrl.objects(short_url__exists=True).get()
+            return ActiveShortUrl.objects(short_url=short_url).get()
         except DoesNotExist:
             return False
         except MultipleObjectsReturned:
