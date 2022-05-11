@@ -10,16 +10,13 @@ This API was made to shorten urls.
     - You can set your expiration date and time manually
     - The default expiration time is 5 days
 - Short urls are not being generated using the long url, so it is random and not predictable
-- To decrease the redirect time:
-    - This application is using a caching system with redis
-    - This application is using a NoSQL database
+- To decrease the redirect time, this application is using a NoSQL database
 
 ## Tech Stack
 - Python - Programming Language
 - FastAPI - REST API
 - Mongo - Database
 - MongoEngine - ORM
-- Redis - Caching
 - Docker - Containerization
 
 ## Application urls:
@@ -34,10 +31,9 @@ For both scenarios you must have a `.env` file with your database information lo
 MONGO_INITDB_ROOT_USERNAME=yourdatabaseuser
 MONGO_INITDB_ROOT_PASSWORD=yourdatabasepass
 MONGO_INITDB_DATABASE=yourdatabasename
-REDIS_PASSWORD=yourredispass
 ```
 
-If you run the database and redis locally with the docker this file will provide the information to create your database as well.
+If you run the database locally with the docker this file will provide the information to create your database.
 
 ### **Local environment with Pipenv**
 Make sure you have installed:
@@ -49,7 +45,7 @@ Run the API:
 
     pipenv shell
     pipenv install
-    docker-compose up redis mongodb
+    docker-compose up mongodb
     uvicorn main:app
 
 Run tests:
