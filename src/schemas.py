@@ -13,3 +13,11 @@ class ShortnerUrlInputSchema(BaseModel):
 class ShortnerUrlSchema(BaseModel):
     long_url: str
     short_url: str
+
+
+class ShortnerUrlAnalyticsSchema(BaseModel):
+    long_url: str
+    short_url: str
+    redirects_count: int
+    timespan: datetime.datetime
+    is_active: bool

@@ -1,5 +1,7 @@
 import uuid
 
+from mongoengine.errors import DoesNotExist, MultipleObjectsReturned
+
 from src.models import ActiveShortUrl
 
 
@@ -19,5 +21,9 @@ class ShortenUrlService:
 
     @staticmethod
     def is_short_url_on_database(short_url: str) -> bool:
-        # TODO: Implement with mongoengine exception
-        return len(ActiveShortUrl.objects(short_url=short_url)) > 0
+        try:
+            return ActiveShortUrl.objects(short_url__exists=True).get()
+        except DoesNotExist:
+            return False
+        except MultipleObjectsReturned:
+            return False
